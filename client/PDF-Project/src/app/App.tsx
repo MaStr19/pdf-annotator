@@ -28,8 +28,8 @@ function App() {
                 
             </header>
         </div>
-        <div className='bg-white m-4 border-solid border-1 rounded-md '>
-            <div className='h-20 border-solid border-b-1'>
+        <div className='bg-white m-4 border-solid border-1 rounded-md flex flex-col justify-center items-center space-x-6'>
+            <div className='h-20 w-full m-0'>
                 <Navbar setPage={setPage} setRotation={setRotation} setScale={setScale} rotation={rotation} page={page} scale={scale}/>
             </div>
             <div className='overflow-hidden'>

@@ -59,43 +59,45 @@ export default function Navbar(props:{setPage:React.Dispatch<React.SetStateActio
 
     return(
         <>
-        <header>
-            <div className="inline-flex">
-                <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l" onClick={() =>{setMode(true), console.log(mode)}}>
-                    View
-                </button>
-                <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r" onClick={() =>{setMode(false), console.log(mode)}}>
-                    Annotate
-                </button> 
+        <div className="w-auto flex flex-col items-center justify-center border-b-1 border-solid">
+            <header>
+                <div className="inline-flex">
+                    <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l" onClick={() =>{setMode(true), console.log(mode)}}>
+                        View
+                    </button>
+                    <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r" onClick={() =>{setMode(false), console.log(mode)}}>
+                        Annotate
+                    </button> 
+                </div>
+            </header>
+            <div>
+                {
+                mode ? (
+                    <header>
+                        <ul>
+                            <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>{handleCounterRotate()}}>counter-clockwise</button>
+                            <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>handleRotate()}>clockwise</button>
+                            <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>handlePageIncrement()}>up</button>
+                            <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>handlePageDecrement()}>down</button>
+                            <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>handleScaleIncrement()}>zoom-in</button>
+                            <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>handleScaleDecrement()}>zoom-out</button>
+                        </ul>
+                    </header>
+                )
+                
+                :
+                
+                (
+                    <header>
+                        <ul>
+                            <button>Hallo</button>
+                            <button>Tschüss</button>
+                            <button>OK</button>
+                        </ul>
+                    </header>
+                )
+                }
             </div>
-        </header>
-        <div>
-            {
-            mode ? (
-                <header>
-                    <ul>
-                        <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>{handleCounterRotate()}}>counter-clockwise</button>
-                        <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>handleRotate()}>clockwise</button>
-                        <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>handlePageIncrement()}>up</button>
-                        <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>handlePageDecrement()}>down</button>
-                        <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>handleScaleIncrement()}>zoom-in</button>
-                        <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>handleScaleDecrement()}>zoom-out</button>
-                    </ul>
-                </header>
-            )
-            
-            :
-            
-            (
-                <header>
-                    <ul>
-                        <button>Hallo</button>
-                        <button>Tschüss</button>
-                        <button>OK</button>
-                    </ul>
-                </header>
-            )
-            }
         </div>
         </>
     )
