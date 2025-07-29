@@ -1,9 +1,28 @@
 import { useState } from "react";
+import { Canvas } from "fabric";
 
 
 
-export default function Navbar(props:{setPage:React.Dispatch<React.SetStateAction<number>>, setScale:React.Dispatch<React.SetStateAction<number>>, setRotation:React.Dispatch<React.SetStateAction<number>>, rotation:number, page:number, scale:number}){
+export default function Navbar(props:{
+    setPage:React.Dispatch<React.SetStateAction<number>>, 
+    setScale:React.Dispatch<React.SetStateAction<number>>, 
+    setRotation:React.Dispatch<React.SetStateAction<number>>,
+    setAnnotate:React.Dispatch<React.SetStateAction<boolean>>, 
+    annotate:boolean, 
+    rotation:number, 
+    page:number, 
+    scale:number,
+    fabricCanvas : Canvas | null
+}){
+    
     const [mode, setMode] = useState(true);
+
+    function handleModeChange(state:boolean){
+        
+            setMode(state);
+            
+        
+    }
 
     function handleRotate(){
         if(props.rotation == 270){
@@ -56,16 +75,24 @@ export default function Navbar(props:{setPage:React.Dispatch<React.SetStateActio
         }
     }
 
+    const enableDraw = ()=>{
+
+        if (props.fabricCanvas) {
+            console.log("YES")
+            props.fabricCanvas.isDrawingMode = true;
+        }
+    }
+
 
     return(
         <>
         <div className="w-auto flex flex-col items-center justify-center border-b-1 border-solid">
             <header>
                 <div className="inline-flex">
-                    <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l" onClick={() =>{setMode(true), console.log(mode)}}>
+                    <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l" onClick={() =>{handleModeChange(true), console.log(mode)}}>
                         View
                     </button>
-                    <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r" onClick={() =>{setMode(false), console.log(mode)}}>
+                    <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r" onClick={() =>{handleModeChange(false), console.log(mode)}}>
                         Annotate
                     </button> 
                 </div>
@@ -90,9 +117,9 @@ export default function Navbar(props:{setPage:React.Dispatch<React.SetStateActio
                 (
                     <header>
                         <ul>
-                            <button>Hallo</button>
-                            <button>Tschüss</button>
-                            <button>OK</button>
+                            <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>enableDraw()}>Write</button>
+                            <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4">Text</button>
+                            <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4">Erase</button>
                         </ul>
                     </header>
                 )
