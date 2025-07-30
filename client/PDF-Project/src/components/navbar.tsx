@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Canvas } from "fabric";
 
 
 
@@ -7,12 +6,11 @@ export default function Navbar(props:{
     setPage:React.Dispatch<React.SetStateAction<number>>, 
     setScale:React.Dispatch<React.SetStateAction<number>>, 
     setRotation:React.Dispatch<React.SetStateAction<number>>,
-    setAnnotate:React.Dispatch<React.SetStateAction<boolean>>, 
-    annotate:boolean, 
     rotation:number, 
     page:number, 
-    scale:number,
-    fabricCanvas : Canvas | null
+    scale:number
+    tool:string,
+    setTool:React.Dispatch<React.SetStateAction<string>>
 }){
     
     const [mode, setMode] = useState(true);
@@ -42,11 +40,11 @@ export default function Navbar(props:{
     }
     function handlePageIncrement(){
         if(props.page == -1){
-            console.log("ist -1");
+            
             props.setPage(1);
         }
         else{
-            console.log("ist nicht -1");
+            
             props.setPage(props.page + 1)
         }
     }
@@ -72,14 +70,6 @@ export default function Navbar(props:{
         }
         else{
             props.setScale(props.scale - 0.25)
-        }
-    }
-
-    const enableDraw = ()=>{
-
-        if (props.fabricCanvas) {
-            console.log("YES")
-            props.fabricCanvas.isDrawingMode = true;
         }
     }
 
@@ -117,7 +107,7 @@ export default function Navbar(props:{
                 (
                     <header>
                         <ul>
-                            <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>enableDraw()}>Write</button>
+                            <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" >Write</button>
                             <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4">Text</button>
                             <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4">Erase</button>
                         </ul>

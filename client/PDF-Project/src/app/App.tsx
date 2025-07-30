@@ -11,12 +11,12 @@ function App() {
     const [rotation, setRotation] = useState(0);
     const [page, setPage] = useState(1);
     const [scale, setScale] = useState(1.5);
-    const [annotate, setAnnotate] = useState(false);
+    const [tool, setTool] = useState("text");
 
-    const [fabricCanvas, setFabricCanvas] = useState<Canvas | null>(null)
+    const [annotate, setAnnotate] = useState<Record<number, Canvas>>({});
 
     useEffect(() => {
-    console.log('Page updated:', page);
+    
     }, [page]);
 
   return (
@@ -39,36 +39,25 @@ function App() {
                 setPage={setPage} 
                 setRotation={setRotation} 
                 setScale={setScale} 
-                setAnnotate={setAnnotate} 
-                annotate={annotate} 
                 rotation={rotation} 
                 page={page} 
                 scale={scale}
-                fabricCanvas={fabricCanvas}
+                tool={tool}
+                setTool={setTool}
+                
                 />
             </div>
-            <button
-                onClick={() => {
-                    if (!fabricCanvas) return;
 
-                    fabricCanvas.isDrawingMode = true;
-
-                    if (fabricCanvas.freeDrawingBrush) {
-                    fabricCanvas.freeDrawingBrush.color = '#0070f3';
-                    fabricCanvas.freeDrawingBrush.width = 5;
-                    }
-                }}
-                >
-                Enable Draw Mode
-            </button>
             <div className='overflow-hidden'>
                 <PDFViewer 
                 fileUrl='/example.pdf' 
                 rotation={rotation} 
                 page={page} 
                 scale={scale}
-                fabricCanvas={fabricCanvas}
-                setFabricCanvas={setFabricCanvas}
+                annotate={annotate}
+                setAnnotate={setAnnotate}
+                tool={tool}
+                setTool={setTool}
                 />
             </div>
         </div>
