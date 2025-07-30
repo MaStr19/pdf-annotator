@@ -11,7 +11,7 @@ function App() {
     const [rotation, setRotation] = useState(0);
     const [page, setPage] = useState(1);
     const [scale, setScale] = useState(1.5);
-    const [tool, setTool] = useState("text");
+    const [tool, setTool] = useState("select");
 
     const [annotate, setAnnotate] = useState<Record<number, Canvas>>({});
 

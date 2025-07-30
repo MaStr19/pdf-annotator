@@ -107,9 +107,9 @@ export default function Navbar(props:{
                 (
                     <header>
                         <ul>
-                            <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" >Write</button>
-                            <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4">Text</button>
-                            <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4">Erase</button>
+                            <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>props.setTool("draw")}>Draw</button>
+                            <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>props.setTool("text")}>Text</button>
+                            <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>props.setTool("select")}>Select</button>
                         </ul>
                     </header>
                 )

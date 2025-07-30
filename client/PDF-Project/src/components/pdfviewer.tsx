@@ -37,12 +37,10 @@ export default function PDFViewer(props: {
     useEffect(()=>{
 
         let canvas = new Canvas(annotationCanvasRef.current!, {
-            isDrawingMode: true,
-            height: 1000,
-            width:1000
+            isDrawingMode: false,
+            height: 0,
+            width:0
         });
-
-        canvas.freeDrawingBrush = new PencilBrush(canvas);
 
         editcanvasRef.current = canvas;
 
@@ -55,16 +53,28 @@ export default function PDFViewer(props: {
 
     useEffect(()=>{
         if (!editcanvasRef.current) return;
-        
-        if(props.tool=="drawing"){
+
+        editcanvasRef.current.isDrawingMode = false;
+        editcanvasRef.current.off('mouse:down');
+
+
+        if(props.tool == "select"){
+            return;
+        }
+        if(props.tool=="draw"){
             editcanvasRef.current.isDrawingMode = true;
             editcanvasRef.current.freeDrawingBrush = new PencilBrush(editcanvasRef.current);
+            editcanvasRef.current!.requestRenderAll();
         }
         
         if(props.tool == "text"){
+            console.log(props.tool)
             editcanvasRef.current.isDrawingMode = false;
 
             editcanvasRef.current.on('mouse:down', (opt) => {
+
+                const target = editcanvasRef.current!.getActiveObject();
+                if (target) return;
 
                 const pointer = editcanvasRef.current!.getScenePoint(opt.e);
                 console.log(pointer)
@@ -83,7 +93,15 @@ export default function PDFViewer(props: {
                 console.log("We got Texting going on over here")
         });
     }
+
     
+
+
+    return(()=>{
+        if(!(props.tool=="draw")){
+            props.setTool("select");
+        }
+    })
 
     },[props.tool])
 
@@ -113,7 +131,9 @@ export default function PDFViewer(props: {
             
 
         }else{
+            editcanvasRef.current!.clear();
             editcanvasRef.current?.loadFromJSON(annotate[props.page])
+            console.log(props.page)
             editcanvasRef.current?.setHeight(viewport.height);
             editcanvasRef.current?.setWidth(viewport.width);
             
@@ -133,7 +153,7 @@ export default function PDFViewer(props: {
             let current_drawing = editcanvasRef.current?.toJSON()
             page_annotations_record[props.page] = current_drawing;
             setAnnotate(page_annotations_record);
-            console.log(current_drawing)
+            console.log(annotate)
         })
         
     },[props.page, props.rotation, viewport])
