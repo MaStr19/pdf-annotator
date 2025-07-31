@@ -10,7 +10,9 @@ export default function Navbar(props:{
     page:number, 
     scale:number
     tool:string,
-    setTool:React.Dispatch<React.SetStateAction<string>>
+    setTool:React.Dispatch<React.SetStateAction<string>>,
+    setDownload:React.Dispatch<React.SetStateAction<boolean>>,
+    download:boolean
 }){
     
     const [mode, setMode] = useState(true);
@@ -96,7 +98,7 @@ export default function Navbar(props:{
                         </ul>
                         <ul>
                             <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" >Upload</button>
-                            <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" >Download</button>
+                            <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>{props.setDownload(!props.download)}}>Download</button>
 
                         </ul>
                     </header>

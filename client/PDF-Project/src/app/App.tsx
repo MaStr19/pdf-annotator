@@ -4,6 +4,7 @@ import Navbar from '../components/navbar'
 import './App.css'
 
 import { Canvas } from 'fabric'
+import type jsPDF from 'jspdf'
 
 function App() {
  
@@ -12,6 +13,9 @@ function App() {
     const [page, setPage] = useState(1);
     const [scale, setScale] = useState(1.5);
     const [tool, setTool] = useState("select");
+
+    const [pdf, setPdf] =useState<jsPDF | null>(null);
+    const [download, setDownload] =useState<boolean>(false);
 
     const [annotate, setAnnotate] = useState<Record<number, Canvas>>({});
 
@@ -44,20 +48,23 @@ function App() {
                 scale={scale}
                 tool={tool}
                 setTool={setTool}
+                setDownload={setDownload}
+                download={download}
                 
                 />
             </div>
 
-            <div className='overflow-hidden'>
+            <div className='overflow-hidden border-solid border-2 '>
                 <PDFViewer 
                 fileUrl='/example.pdf' 
                 rotation={rotation} 
                 page={page} 
                 scale={scale}
-                setPage={setPage}
                 annotate={annotate}
                 setAnnotate={setAnnotate}
                 tool={tool}
+                download={download}
+                setPdf={setPdf}
                 setTool={setTool}
                 />
             </div>

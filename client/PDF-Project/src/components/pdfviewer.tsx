@@ -19,7 +19,8 @@ export default function PDFViewer(props: {
     setAnnotate:any
     tool:string,
     setTool:React.Dispatch<React.SetStateAction<string>>,
-    setPage:React.Dispatch<React.SetStateAction<number>>
+    setPdf:React.Dispatch<React.SetStateAction<jsPDF | null>>, 
+    download:boolean;
 
     }){
 
@@ -34,7 +35,8 @@ export default function PDFViewer(props: {
 
     const annotationCanvasRef = useRef<HTMLCanvasElement>(null);
     const editcanvasRef = useRef<Canvas>(null);
-
+    
+    const isMounted = useRef(false);
     
     useEffect(()=>{
 
@@ -70,7 +72,6 @@ export default function PDFViewer(props: {
         }
         
         if(props.tool == "text"){
-            console.log(props.tool)
             editcanvasRef.current.isDrawingMode = false;
 
             editcanvasRef.current.on('mouse:down', (opt) => {
@@ -79,7 +80,6 @@ export default function PDFViewer(props: {
                 if (target) return;
 
                 const pointer = editcanvasRef.current!.getScenePoint(opt.e);
-                console.log(pointer)
                 const textbox = new Textbox('Enter text', {
                     left: pointer.x,
                     top: pointer.y,
@@ -92,7 +92,6 @@ export default function PDFViewer(props: {
                 });
                 editcanvasRef.current!.add(textbox);
                 editcanvasRef.current!.requestRenderAll();
-                console.log("We got Texting going on over here")
         });
     }
 
@@ -128,7 +127,6 @@ export default function PDFViewer(props: {
 
         if(!annotate[props.page]){
 
-            console.log("Your freshly drawing")
             editcanvasRef.current!.clear();
             
 
@@ -150,11 +148,9 @@ export default function PDFViewer(props: {
         }
 
         return(()=>{
-            console.log("Your saving")
             let current_drawing = editcanvasRef.current?.toJSON()
             page_annotations_record[props.page] = current_drawing;
             setAnnotate(page_annotations_record);
-            console.log(annotate)
         })
         
     },[props.page, props.rotation, viewport, props.scale])
@@ -230,34 +226,43 @@ export default function PDFViewer(props: {
 
         return jpegDataUrl;
     };
+    useEffect(()=>{
 
-    const exportAllPages =  async() =>{
-        
-        let return_arr = [];
-        let return_doc = new jsPDF({
-            orientation:'portrait',
-            format: [viewport.height, viewport.width]
-        })
-
-        for(let i= 1; i <=page_num; i++){
-            
-            let image_data = await exportCombinedJpeg(i);
-            return_arr.push(image_data);
-            return_doc.addImage(image_data!, 'JPEG', 0, 0, viewport.width, viewport.height, i.toString(), 'NONE', 0);
-            if(i!=page_num){
-                return_doc.addPage([viewport.height, viewport.width], 'portrait')
-            }
+        if(!isMounted.current){
+            isMounted.current = true;
+            return;
         }
 
-        return_doc.save('annotated.pdf');
-    }
+        const exportAllPages =  async() =>{
+            
+            let return_arr = [];
+            let return_doc = new jsPDF({
+                orientation:'portrait',
+                format: [viewport.height, viewport.width]
+            })
 
+            for(let i= 1; i <=page_num; i++){
+                
+                let image_data = await exportCombinedJpeg(i);
+                return_arr.push(image_data);
+                return_doc.addImage(image_data!, 'JPEG', 0, 0, viewport.width, viewport.height, i.toString(), 'NONE', 0);
+                if(i!=page_num){
+                    return_doc.addPage([viewport.height, viewport.width], 'portrait')
+                }
+            }
+
+            return_doc.save('annotated.pdf');
+        }
+        if(props.download){
+            exportAllPages();
+        }
+
+    }, [props.download])
 
     return (
     <div className='relative inline-block' style={{ width: viewport.width, height: viewport.height }}>
         <canvas ref={canvasRef} width={viewport.width} height={viewport.height} className='absolute z-1'/>
         <canvas ref={annotationCanvasRef} width={viewport.width} height={viewport.height} style={{ width: viewport.width, height: viewport.height }} className="absolute top-0 left-0 pointer-events-auto z-10" />
-        <button onClick={()=>exportAllPages()}>Download</button>
     </div>
     
 );
