@@ -1,4 +1,3 @@
-import { useState } from "react";
 
 
 
@@ -12,17 +11,11 @@ export default function Navbar(props:{
     tool:string,
     setTool:React.Dispatch<React.SetStateAction<string>>,
     setDownload:React.Dispatch<React.SetStateAction<boolean>>,
-    download:boolean
+    download:boolean,
+    setModalOpen:React.Dispatch<React.SetStateAction<boolean>>
 }){
     
-    const [mode, setMode] = useState(true);
-
-    function handleModeChange(state:boolean){
-        
-            setMode(state);
-            
-        
-    }
+    
 
     function handleRotate(){
         if(props.rotation == 270){
@@ -84,8 +77,7 @@ export default function Navbar(props:{
            
                     <header className="w-full flex flex-row gap-x-4">
                         <ul>
-                            <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>{handleCounterRotate()}}>counter-clockwise</button>
-                            <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>handleRotate()}>clockwise</button>
+
                             <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>handlePageIncrement()}>up</button>
                             <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>handlePageDecrement()}>down</button>
                             <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>handleScaleIncrement()}>zoom-in</button>
@@ -97,7 +89,7 @@ export default function Navbar(props:{
                             <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>props.setTool("select")}>Select</button>
                         </ul>
                         <ul>
-                            <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" >Upload</button>
+                            <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>props.setModalOpen(true)}>Upload</button>
                             <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>{props.setDownload(!props.download)}}>Download</button>
 
                         </ul>
@@ -105,6 +97,7 @@ export default function Navbar(props:{
                 
             </div>
             </header>
+
         </div>
         </>
     )

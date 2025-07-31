@@ -19,8 +19,10 @@ export default function PDFViewer(props: {
     setAnnotate:any
     tool:string,
     setTool:React.Dispatch<React.SetStateAction<string>>,
-    setPdf:React.Dispatch<React.SetStateAction<jsPDF | null>>, 
-    download:boolean;
+    setDownload:React.Dispatch<React.SetStateAction<boolean>>,
+    download:boolean,
+    upload:boolean,
+    token:string
 
     }){
 
@@ -35,7 +37,7 @@ export default function PDFViewer(props: {
 
     const annotationCanvasRef = useRef<HTMLCanvasElement>(null);
     const editcanvasRef = useRef<Canvas>(null);
-    
+    const pdf = useRef<any>(null)
     const isMounted = useRef(false);
     
     useEffect(()=>{
@@ -168,7 +170,7 @@ export default function PDFViewer(props: {
 
             const page = await pdf.getPage(props.page);
             page_num = pdf.numPages;
-            const viewport = page.getViewport({ scale: props.scale, rotation: props.rotation });
+            const viewport = page.getViewport({ scale: props.scale, rotation: 0 });
             setViewport({width:viewport.width, height:viewport.height});
 
             
@@ -232,6 +234,7 @@ export default function PDFViewer(props: {
             isMounted.current = true;
             return;
         }
+        let file:File;
 
         const exportAllPages =  async() =>{
             
@@ -250,14 +253,64 @@ export default function PDFViewer(props: {
                     return_doc.addPage([viewport.height, viewport.width], 'portrait')
                 }
             }
-
-            return_doc.save('annotated.pdf');
+            const blob = return_doc.output("blob");
+            file = new File([blob], "annotated.pdf", {type: "application/pdf"})
+            
+            
+            pdf.current = file;
+            renderPage()
+            if(props.download){
+                props.setDownload(false)
+                return_doc.save('annotated.pdf');
+            }
+            
         }
         if(props.download){
             exportAllPages();
         }
+        if(props.token){
+            
+            const uploading = async ()=>{
 
-    }, [props.download])
+                await exportAllPages();
+                try{
+                    console.log("Began", props.token)
+                    const formData = new FormData();
+                    formData.append("file", file)
+                    console.log("Hereasff")
+                    const res = await fetch("/api/upload-pdf", {
+                        method: "POST",
+                        headers:{Authorization: `Bearer ${props.token}`},
+                        body: formData,
+                    });
+
+                    let return_body = await res.json().then(x=>{
+                        return(
+                        `
+                        ${x.message}\n\n
+                        File ID: ${x.file_id}\n
+                        Filename: ${x.filename}\n
+                        Original Filename: ${x.original_filename}\n
+                        Size in Bytes: ${x.size_bytes.toString()}\n
+                        Uploaded by: ${x.uploaded_by}\n
+                        Uploaded at: ${x.uploaded_at}\n
+                        File Hash: ${x.file_hash}\n
+                        `
+                        )
+
+                    })
+                    console.log(return_body)
+                    alert(return_body)
+                }catch{
+                    console.log("Something went wrong")
+                    return;
+                }
+            
+            }
+            uploading();
+        }
+
+    }, [props.download, props.token])
 
     return (
     <div className='relative inline-block' style={{ width: viewport.width, height: viewport.height }}>

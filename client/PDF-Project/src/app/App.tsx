@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
 import PDFViewer from '../components/pdfviewer'
 import Navbar from '../components/navbar'
+import Modal from '../components/modal'
 import './App.css'
 
 import { Canvas } from 'fabric'
-import type jsPDF from 'jspdf'
+
 
 function App() {
  
@@ -14,14 +15,37 @@ function App() {
     const [scale, setScale] = useState(1.5);
     const [tool, setTool] = useState("select");
 
-    const [pdf, setPdf] =useState<jsPDF | null>(null);
+    const [token, setToken] = useState<string>("")
     const [download, setDownload] =useState<boolean>(false);
-
+    const [email, setEmail] = useState<string>("");
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [annotate, setAnnotate] = useState<Record<number, Canvas>>({});
 
     useEffect(() => {
-    
-    }, [page]);
+
+        const token_getter = async ()=>{
+            
+            try{
+                
+                const qs = new URLSearchParams({ email }).toString();
+
+                const res = await fetch(`https://pdf.challenge.taxbier.de/provide-token?${qs}`, {
+                    method: "POST",
+                });
+                
+                if(res.ok){
+                    let body = await res.json().then(x=>setToken(x["access_token"]))
+                    console.log(token)
+                }
+            }catch{
+                return;
+            }
+        }
+        if(email != ""){
+            token_getter();
+            setEmail("")
+        }
+    }, [email]);
 
   return (
     <>
@@ -37,6 +61,10 @@ function App() {
                 
             </header>
         </div>
+        <div>
+         {isModalOpen && <Modal isOpen={isModalOpen} setIsModalOpen={setIsModalOpen} setEmail={setEmail}/>}
+        </div>
+
         <div className='bg-white m-4 border-solid border-1 rounded-md flex flex-col justify-center items-center space-x-6'>
             <div className='h-20 w-full m-0'>
                 <Navbar 
@@ -50,7 +78,7 @@ function App() {
                 setTool={setTool}
                 setDownload={setDownload}
                 download={download}
-                
+                setModalOpen={setIsModalOpen}
                 />
             </div>
 
@@ -64,8 +92,10 @@ function App() {
                 setAnnotate={setAnnotate}
                 tool={tool}
                 download={download}
-                setPdf={setPdf}
+                upload={false}
                 setTool={setTool}
+                setDownload={setDownload}
+                token={token}
                 />
             </div>
         </div>
