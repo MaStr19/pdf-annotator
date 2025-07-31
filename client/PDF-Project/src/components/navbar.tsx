@@ -76,21 +76,11 @@ export default function Navbar(props:{
 
     return(
         <>
-        <div className="w-auto flex flex-col items-center justify-center border-b-1 border-solid">
+        <div className="w-auto flex flex-col items-center justify-center border-b-1 border-solid pt-0 pb-0">
             <header>
-                <div className="inline-flex">
-                    <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l" onClick={() =>{handleModeChange(true), console.log(mode)}}>
-                        View
-                    </button>
-                    <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r" onClick={() =>{handleModeChange(false), console.log(mode)}}>
-                        Annotate
-                    </button> 
-                </div>
-            </header>
             <div>
-                {
-                mode ? (
-                    <header>
+           
+                    <header className="w-full flex flex-row gap-x-4">
                         <ul>
                             <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>{handleCounterRotate()}}>counter-clockwise</button>
                             <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>handleRotate()}>clockwise</button>
@@ -99,22 +89,20 @@ export default function Navbar(props:{
                             <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>handleScaleIncrement()}>zoom-in</button>
                             <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>handleScaleDecrement()}>zoom-out</button>
                         </ul>
-                    </header>
-                )
-                
-                :
-                
-                (
-                    <header>
                         <ul>
                             <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>props.setTool("draw")}>Draw</button>
                             <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>props.setTool("text")}>Text</button>
                             <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>props.setTool("select")}>Select</button>
                         </ul>
+                        <ul>
+                            <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" >Upload</button>
+                            <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" >Download</button>
+
+                        </ul>
                     </header>
-                )
-                }
+                
             </div>
+            </header>
         </div>
         </>
     )

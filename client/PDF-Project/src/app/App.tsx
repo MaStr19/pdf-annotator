@@ -54,6 +54,7 @@ function App() {
                 rotation={rotation} 
                 page={page} 
                 scale={scale}
+                setPage={setPage}
                 annotate={annotate}
                 setAnnotate={setAnnotate}
                 tool={tool}
