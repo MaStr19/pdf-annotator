@@ -17,22 +17,7 @@ export default function Navbar(props:{
     
     
 
-    function handleRotate(){
-        if(props.rotation == 270){
-            props.setRotation(0);
-        }
-        else{
-            props.setRotation(props.rotation +90)
-        }
-    }
-    function handleCounterRotate(){
-        if(props.rotation == 0){
-            props.setRotation(270);
-        }
-        else{
-            props.setRotation(props.rotation - 90)
-        }
-    }
+
     function handlePageIncrement(){
         if(props.page == -1){
             
@@ -87,6 +72,10 @@ export default function Navbar(props:{
                             <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>props.setTool("draw")}>Draw</button>
                             <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>props.setTool("text")}>Text</button>
                             <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>props.setTool("select")}>Select</button>
+                            <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>props.setTool("erase")}>Delete Selected</button>
+                            <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>props.setTool("highlight")}>Highlighter</button>
+                           
+        
                         </ul>
                         <ul>
                             <button className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4" onClick={()=>props.setModalOpen(true)}>Upload</button>

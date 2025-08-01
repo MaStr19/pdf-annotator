@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import * as pdfjsLib from 'pdfjs-dist';
 import { GlobalWorkerOptions } from 'pdfjs-dist';
 import pdfjsWorker from 'pdfjs-dist/build/pdf.worker?url';
-import { Canvas, PencilBrush, Textbox } from 'fabric';
+import { Canvas, PencilBrush, Textbox} from 'fabric';
 import jsPDF from 'jspdf';
 
 
@@ -20,9 +20,11 @@ export default function PDFViewer(props: {
     tool:string,
     setTool:React.Dispatch<React.SetStateAction<string>>,
     setDownload:React.Dispatch<React.SetStateAction<boolean>>,
+    setPage:React.Dispatch<React.SetStateAction<number>>,
     download:boolean,
     upload:boolean,
-    token:string
+    token:string,
+    fileData:Uint8Array|ArrayBuffer
 
     }){
 
@@ -40,6 +42,32 @@ export default function PDFViewer(props: {
     const pdf = useRef<any>(null)
     const isMounted = useRef(false);
     
+
+    useEffect(() => {
+        let cancelled = false;
+        (async () => {
+            if (!props.fileData) return;
+
+            
+            const data =
+            props.fileData instanceof Uint8Array
+                ? props.fileData.slice() 
+                : new Uint8Array(props.fileData).slice();
+
+            const loadingTask = pdfjsLib.getDocument({ data });
+            try {
+            const pdf = await loadingTask.promise;
+            if (cancelled) return;
+            pdfRef.current = pdf;
+            await renderPage();
+            } catch (e) {
+            if (!cancelled) console.error(e);
+            }
+        })();
+        return () => { cancelled = true; };
+    }, [props.fileData]);
+
+
     useEffect(()=>{
 
         let canvas = new Canvas(annotationCanvasRef.current!, {
@@ -67,10 +95,26 @@ export default function PDFViewer(props: {
         if(props.tool == "select"){
             return;
         }
+        if(props.tool =="erase"){
+            editcanvasRef.current.getActiveObjects().forEach(obj => { editcanvasRef.current?.remove(obj)});
+            editcanvasRef.current.renderAll();
+            props.setTool("select");
+        }
         if(props.tool=="draw"){
             editcanvasRef.current.isDrawingMode = true;
             editcanvasRef.current.freeDrawingBrush = new PencilBrush(editcanvasRef.current);
             editcanvasRef.current!.requestRenderAll();
+            
+        }
+        if(props.tool == "highlight"){
+            editcanvasRef.current.isDrawingMode = true;
+            editcanvasRef.current.freeDrawingBrush = new PencilBrush(editcanvasRef.current);
+            editcanvasRef.current.freeDrawingBrush.color = "rgba(255, 255, 0, 0.4)";
+            editcanvasRef.current.freeDrawingBrush.width = 15;
+            editcanvasRef.current.freeDrawingBrush.strokeLineCap = "round";            
+            editcanvasRef.current!.requestRenderAll();
+
+
         }
         
         if(props.tool == "text"){
@@ -96,11 +140,6 @@ export default function PDFViewer(props: {
                 editcanvasRef.current!.requestRenderAll();
         });
     }
-
-    
-    
-
-
     return(()=>{
         if(!(props.tool=="draw")){
             props.setTool("select");
@@ -109,17 +148,6 @@ export default function PDFViewer(props: {
     },[props.tool])
 
 
-
-    useEffect(() => {
-        const loadPdf = async () => {
-            const loadingTask = pdfjsLib.getDocument(props.fileUrl);
-            pdfRef.current = await loadingTask.promise;
-            await renderPage();
-
-        };
-        
-        loadPdf();
-        }, [props.fileUrl]);
     
     
 
@@ -167,9 +195,19 @@ export default function PDFViewer(props: {
 
             const pdf = pdfRef.current;
             if (!pdf) return;
-
-            const page = await pdf.getPage(props.page);
             page_num = pdf.numPages;
+            let page;
+            if(props.page > page_num){
+                props.setPage(page_num);
+                return;
+            }else{
+                page = await pdf.getPage(props.page);
+                console.log(page)
+                console.log(page._pageInfo.view)
+
+            }
+            
+            
             const viewport = page.getViewport({ scale: props.scale, rotation: 0 });
             setViewport({width:viewport.width, height:viewport.height});
 
@@ -200,7 +238,6 @@ export default function PDFViewer(props: {
         const annotationCanvas = annotationCanvasRef.current;
         if (!canvasRef.current! || !annotationCanvas) return;
 
-        // Create a new canvas to combine both
         const combinedCanvas = document.createElement('canvas');
         combinedCanvas.width = canvasRef.current.width;
         combinedCanvas.height = canvasRef.current.height;
@@ -209,7 +246,9 @@ export default function PDFViewer(props: {
         const tempAnnotationCanvas = document.createElement('canvas');
         tempAnnotationCanvas.width = canvasRef.current.width;
         tempAnnotationCanvas.height = canvasRef.current.height;
-        const tempFabric = new Canvas(tempAnnotationCanvas);
+        const tempFabric = new Canvas(tempAnnotationCanvas,{
+            enableRetinaScaling: false
+        });
         if (annotate[index]) {
             await tempFabric.loadFromJSON(annotate[index]);
             tempFabric.setViewportTransform([3, 0, 0, 3, 0,0]);
@@ -217,13 +256,10 @@ export default function PDFViewer(props: {
 
         }
 
-        // Draw PDF
         ctx!.drawImage(canvasRef.current!, 0, 0);
 
-        // Draw annotation
         ctx!.drawImage(tempAnnotationCanvas, 0, 0);
 
-        // Export as JPEG
         const jpegDataUrl = combinedCanvas.toDataURL('image/jpeg', 2);
 
         return jpegDataUrl;
@@ -274,10 +310,8 @@ export default function PDFViewer(props: {
 
                 await exportAllPages();
                 try{
-                    console.log("Began", props.token)
                     const formData = new FormData();
                     formData.append("file", file)
-                    console.log("Hereasff")
                     const res = await fetch("/api/upload-pdf", {
                         method: "POST",
                         headers:{Authorization: `Bearer ${props.token}`},
@@ -299,10 +333,8 @@ export default function PDFViewer(props: {
                         )
 
                     })
-                    console.log(return_body)
                     alert(return_body)
                 }catch{
-                    console.log("Something went wrong")
                     return;
                 }
             

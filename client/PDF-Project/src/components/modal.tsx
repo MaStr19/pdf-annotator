@@ -1,4 +1,3 @@
-import { useRef } from "react"
 
 export default function Modal(props:{
 
@@ -7,7 +6,8 @@ export default function Modal(props:{
     setEmail:React.Dispatch<React.SetStateAction<string>>
 
 }) {
-    const text_box_value = useRef("");
+    
+    
 
     const get_input = ()=>{
 
