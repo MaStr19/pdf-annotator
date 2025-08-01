@@ -208,13 +208,14 @@ export default function PDFViewer(props: {
             }
             
             
-            const viewport = page.getViewport({ scale: props.scale, rotation: 0 });
-            setViewport({width:viewport.width, height:viewport.height});
+            const new_viewport = await page.getViewport({ scale: props.scale, rotation: 0 });
+            console.log(new_viewport)
+            setViewport({width:new_viewport.width, height:new_viewport.height});
 
             
             const canvas = canvasRef.current!;
             if(!canvas) return;
-            await page.render({ canvasContext: canvas.getContext('2d')!, viewport }).promise;
+            await page.render({ canvasContext: canvas.getContext('2d')!, viewport:{width:new_viewport.width, height:new_viewport.height, transform: new_viewport.transform}}).promise;
     }
     const renderPage_overload = async (j:number) => {
 
@@ -223,13 +224,16 @@ export default function PDFViewer(props: {
 
             const page = await pdf.getPage(j);
             page_num = pdf.numPages;
-            const viewport = page.getViewport({ scale: 3, rotation: props.rotation });
-            setViewport({width:viewport.width, height:viewport.height});
-
+            const new_viewport = await page.getViewport({ scale: 3, rotation: props.rotation });
+            setViewport({width:new_viewport.width, height:new_viewport.height});
+            console.log(canvasRef.current)
+            canvasRef.current!.width = new_viewport.width;
+            canvasRef.current!.height = new_viewport.height;
+            console.log(canvasRef.current)
             
             const canvas = canvasRef.current!;
             if(!canvas) return;
-            await page.render({ canvasContext: canvas.getContext('2d')!, viewport }).promise;
+            await page.render({ canvasContext: canvas.getContext('2d')!, viewport:{width:new_viewport.width, height:new_viewport.height, transform: new_viewport.transform} }).promise;
     }
 
 
@@ -277,9 +281,10 @@ export default function PDFViewer(props: {
             let return_arr = [];
             let return_doc = new jsPDF({
                 orientation:'portrait',
-                format: [viewport.height, viewport.width]
+                unit:"mm",
+                format: [ viewport.height, viewport.width]
             })
-
+            console.log(viewport)
             for(let i= 1; i <=page_num; i++){
                 
                 let image_data = await exportCombinedJpeg(i);
